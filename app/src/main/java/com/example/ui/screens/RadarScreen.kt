@@ -3,7 +3,6 @@ package com.example.ui.screens
 import android.Manifest
 import android.os.Build
 import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.FastOutSlowInEasing
@@ -38,22 +37,20 @@ import androidx.compose.material.icons.rounded.PhotoLibrary
 import androidx.compose.material.icons.rounded.Radar
 import androidx.compose.material.icons.rounded.Refresh
 import androidx.compose.material.icons.rounded.Router
-import androidx.compose.material.icons.rounded.Science
 import androidx.compose.material.icons.rounded.Shield
-import androidx.compose.material.icons.rounded.Wifi
 import androidx.compose.material.icons.rounded.WifiOff
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Switch
+import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
@@ -61,8 +58,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawBehind
-import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.platform.testTag
@@ -102,20 +97,20 @@ fun RadarScreen(
 
     val statusColor by animateColorAsState(
         targetValue = when (networkState.status) {
-            WifiPortalStatus.CAPTIVE_PORTAL_DETECTED -> MaterialTheme.colorScheme.tertiary
+            WifiPortalStatus.CAPTIVE_PORTAL_DETECTED -> MaterialTheme.colorScheme.primary
             WifiPortalStatus.INTERNET_CONNECTED -> MaterialTheme.colorScheme.secondary
             WifiPortalStatus.CHECKING -> MaterialTheme.colorScheme.primary
-            WifiPortalStatus.NO_WIFI -> MaterialTheme.colorScheme.error
+            WifiPortalStatus.NO_WIFI -> MaterialTheme.colorScheme.onSurfaceVariant
         },
         label = "status_color",
     )
 
     val infiniteTransition = rememberInfiniteTransition(label = "radar_pulse")
     val pulseRadius by infiniteTransition.animateFloat(
-        initialValue = 0.85f,
-        targetValue = 1.35f,
+        initialValue = 0.88f,
+        targetValue = 1.28f,
         animationSpec = infiniteRepeatable(
-            animation = tween(1400, easing = FastOutSlowInEasing),
+            animation = tween(1500, easing = FastOutSlowInEasing),
             repeatMode = RepeatMode.Reverse,
         ),
         label = "pulse_radius",
@@ -125,33 +120,26 @@ fun RadarScreen(
         modifier = modifier
             .fillMaxSize()
             .verticalScroll(rememberScrollState())
-            .padding(horizontal = 16.dp, vertical = 14.dp),
+            .padding(horizontal = 18.dp, vertical = 16.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .widthIn(max = 600.dp),
-            verticalArrangement = Arrangement.spacedBy(14.dp),
+                .widthIn(max = 560.dp),
+            verticalArrangement = Arrangement.spacedBy(18.dp),
         ) {
-            // Header
+            // Minimal Header
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically,
             ) {
-                Column {
-                    Text(
-                        text = stringResource(R.string.app_name),
-                        style = MaterialTheme.typography.headlineMedium,
-                        color = MaterialTheme.colorScheme.primary,
-                    )
-                    Text(
-                        text = stringResource(R.string.radar_subtitle),
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    )
-                }
+                Text(
+                    text = stringResource(R.string.app_name),
+                    style = MaterialTheme.typography.headlineMedium,
+                    color = MaterialTheme.colorScheme.primary,
+                )
 
                 IconButton(
                     onClick = onRefreshNetwork,
@@ -167,150 +155,125 @@ fun RadarScreen(
                 }
             }
 
-            // Hero Network Cockpit Card
+            // Focused Hero Status & Primary Action Card
             Card(
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(24.dp),
                 colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-                border = BorderStroke(1.dp, statusColor.copy(alpha = 0.45f)),
+                border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary.copy(alpha = 0.35f)),
             ) {
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .background(
-                            Brush.verticalGradient(
-                                colors = listOf(
-                                    statusColor.copy(alpha = 0.14f),
-                                    Color.Transparent,
-                                ),
-                            ),
-                        )
-                        .padding(20.dp),
+                Column(
+                    modifier = Modifier.padding(22.dp),
+                    verticalArrangement = Arrangement.spacedBy(20.dp),
                 ) {
-                    Column(verticalArrangement = Arrangement.spacedBy(14.dp)) {
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.spacedBy(14.dp),
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(14.dp),
+                    ) {
+                        Box(
+                            modifier = Modifier
+                                .size(54.dp)
+                                .drawBehind {
+                                    drawCircle(
+                                        color = statusColor.copy(alpha = 0.16f),
+                                        radius = (size.minDimension / 2f) * pulseRadius,
+                                    )
+                                }
+                                .clip(CircleShape)
+                                .background(statusColor.copy(alpha = 0.18f)),
+                            contentAlignment = Alignment.Center,
                         ) {
-                            Box(
-                                modifier = Modifier
-                                    .size(56.dp)
-                                    .drawBehind {
-                                        drawCircle(
-                                            color = statusColor.copy(alpha = 0.18f),
-                                            radius = (size.minDimension / 2f) * pulseRadius,
-                                        )
-                                    }
-                                    .clip(CircleShape)
-                                    .background(statusColor.copy(alpha = 0.2f)),
-                                contentAlignment = Alignment.Center,
-                            ) {
-                                Icon(
-                                    imageVector = when (networkState.status) {
-                                        WifiPortalStatus.CAPTIVE_PORTAL_DETECTED -> Icons.Rounded.Router
-                                        WifiPortalStatus.INTERNET_CONNECTED -> Icons.Rounded.CheckCircle
-                                        WifiPortalStatus.CHECKING -> Icons.Rounded.Radar
-                                        WifiPortalStatus.NO_WIFI -> Icons.Rounded.WifiOff
-                                    },
-                                    contentDescription = null,
-                                    tint = statusColor,
-                                    modifier = Modifier.size(28.dp),
-                                )
-                            }
+                            Icon(
+                                imageVector = when (networkState.status) {
+                                    WifiPortalStatus.CAPTIVE_PORTAL_DETECTED -> Icons.Rounded.Router
+                                    WifiPortalStatus.INTERNET_CONNECTED -> Icons.Rounded.CheckCircle
+                                    WifiPortalStatus.CHECKING -> Icons.Rounded.Radar
+                                    WifiPortalStatus.NO_WIFI -> Icons.Rounded.WifiOff
+                                },
+                                contentDescription = null,
+                                tint = statusColor,
+                                modifier = Modifier.size(28.dp),
+                            )
+                        }
 
-                            Column(modifier = Modifier.weight(1f)) {
-                                Text(
-                                    text = when (networkState.status) {
-                                        WifiPortalStatus.CAPTIVE_PORTAL_DETECTED ->
-                                            stringResource(R.string.status_captive_detected)
-                                        WifiPortalStatus.INTERNET_CONNECTED ->
-                                            stringResource(R.string.status_wifi_connected)
-                                        WifiPortalStatus.CHECKING ->
-                                            stringResource(R.string.status_wifi_checking)
-                                        WifiPortalStatus.NO_WIFI ->
-                                            stringResource(R.string.status_no_wifi)
-                                    },
-                                    style = MaterialTheme.typography.titleMedium,
-                                    color = MaterialTheme.colorScheme.onSurface,
-                                )
-                                if (!networkState.detectionSource.isNullOrBlank()) {
+                        Column(modifier = Modifier.weight(1f)) {
+                            Text(
+                                text = when (networkState.status) {
+                                    WifiPortalStatus.CAPTIVE_PORTAL_DETECTED ->
+                                        stringResource(R.string.status_captive_detected)
+                                    WifiPortalStatus.INTERNET_CONNECTED ->
+                                        stringResource(R.string.status_wifi_connected)
+                                    WifiPortalStatus.CHECKING ->
+                                        stringResource(R.string.status_wifi_checking)
+                                    WifiPortalStatus.NO_WIFI ->
+                                        stringResource(R.string.status_no_wifi)
+                                },
+                                style = MaterialTheme.typography.titleMedium,
+                                fontWeight = FontWeight.Bold,
+                            )
+
+                            val endpoint = networkState.portalUrl ?: networkState.gatewayIp
+                            if (!endpoint.isNullOrBlank()) {
+                                CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Ltr) {
                                     Text(
-                                        text = networkState.detectionSource,
-                                        style = MaterialTheme.typography.labelSmall,
-                                        color = statusColor,
+                                        text = endpoint,
+                                        style = MaterialTheme.typography.labelSmall.copy(
+                                            fontFamily = JetBrainsMonoFontFamily,
+                                        ),
+                                        color = MaterialTheme.colorScheme.primary,
+                                        maxLines = 1,
+                                        overflow = TextOverflow.Ellipsis,
                                     )
                                 }
                             }
                         }
+                    }
 
-                        // Network Telemetry Badges
-                        Surface(
-                            shape = RoundedCornerShape(14.dp),
-                            color = MaterialTheme.colorScheme.background.copy(alpha = 0.7f),
-                            modifier = Modifier.fillMaxWidth(),
-                        ) {
-                            Column(
-                                modifier = Modifier.padding(12.dp),
-                                verticalArrangement = Arrangement.spacedBy(6.dp),
-                            ) {
-                                TelemetryRow(
-                                    label = stringResource(R.string.label_gateway),
-                                    value = networkState.gatewayIp ?: "—",
-                                )
-                                TelemetryRow(
-                                    label = stringResource(R.string.label_portal_url),
-                                    value = networkState.portalUrl ?: "لم يتم رصد بوابة بعد",
-                                )
-                                TelemetryRow(
-                                    label = stringResource(R.string.label_network_interface),
-                                    value = buildString {
-                                        append(networkState.interfaceName ?: "wlan0")
-                                        if (networkState.isBoundToWifi) append(" • مرتبط مباشرة")
-                                    },
-                                )
-                            }
-                        }
-
-                        // Primary CTA
-                        Button(
-                            onClick = onOpenPortal,
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .height(52.dp)
-                                .testTag("open_portal_button"),
-                            shape = RoundedCornerShape(14.dp),
-                            colors = ButtonDefaults.buttonColors(
-                                containerColor = MaterialTheme.colorScheme.primary,
-                                contentColor = MaterialTheme.colorScheme.onPrimary,
-                            ),
-                        ) {
-                            Icon(
-                                imageVector = Icons.Rounded.Language,
-                                contentDescription = null,
-                                modifier = Modifier.size(20.dp),
-                            )
-                            Spacer(modifier = Modifier.width(8.dp))
-                            Text(
-                                text = stringResource(R.string.action_open_portal),
-                                style = MaterialTheme.typography.labelLarge,
-                            )
-                        }
+                    // Primary Gold CTA
+                    Button(
+                        onClick = onOpenPortal,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(54.dp)
+                            .testTag("open_portal_button"),
+                        shape = RoundedCornerShape(16.dp),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = MaterialTheme.colorScheme.primary,
+                            contentColor = MaterialTheme.colorScheme.onPrimary,
+                        ),
+                    ) {
+                        Icon(
+                            imageVector = Icons.Rounded.Language,
+                            contentDescription = null,
+                            modifier = Modifier.size(20.dp),
+                        )
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text(
+                            text = stringResource(R.string.action_open_portal),
+                            style = MaterialTheme.typography.labelLarge,
+                            fontWeight = FontWeight.Bold,
+                        )
                     }
                 }
             }
 
-            // Quick Voucher Scan Actions Row
+            // Ultra-Essential Scan Actions (Camera + Gallery)
             Row(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(10.dp),
+                horizontalArrangement = Arrangement.spacedBy(12.dp),
             ) {
-                FilledTonalButton(
+                Button(
                     onClick = onOpenScanner,
                     modifier = Modifier
                         .weight(1f)
                         .height(54.dp)
                         .testTag("quick_camera_scan_button"),
                     shape = RoundedCornerShape(16.dp),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = MaterialTheme.colorScheme.primaryContainer,
+                        contentColor = MaterialTheme.colorScheme.primary,
+                    ),
+                    border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary.copy(alpha = 0.55f)),
                 ) {
                     Icon(
                         imageVector = Icons.Rounded.CameraAlt,
@@ -319,7 +282,8 @@ fun RadarScreen(
                     )
                     Spacer(modifier = Modifier.width(6.dp))
                     Text(
-                        text = stringResource(R.string.action_quick_scan),
+                        text = "مسح الكرت",
+                        fontWeight = FontWeight.SemiBold,
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis,
                     )
@@ -332,6 +296,10 @@ fun RadarScreen(
                         .height(54.dp)
                         .testTag("quick_gallery_pick_button"),
                     shape = RoundedCornerShape(16.dp),
+                    border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary.copy(alpha = 0.55f)),
+                    colors = ButtonDefaults.outlinedButtonColors(
+                        contentColor = MaterialTheme.colorScheme.primary,
+                    ),
                 ) {
                     Icon(
                         imageVector = Icons.Rounded.PhotoLibrary,
@@ -341,52 +309,37 @@ fun RadarScreen(
                     Spacer(modifier = Modifier.width(6.dp))
                     Text(
                         text = "من الاستوديو",
+                        fontWeight = FontWeight.SemiBold,
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis,
                     )
                 }
             }
 
-            // Background Portal Watch Guard Card
+            // Compact Auto-Watch Switch Row
             Card(
                 modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(20.dp),
+                shape = RoundedCornerShape(18.dp),
                 colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
                 border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline),
             ) {
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(16.dp),
+                        .padding(horizontal = 16.dp, vertical = 12.dp),
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.spacedBy(12.dp),
                 ) {
-                    Surface(
-                        shape = CircleShape,
-                        color = MaterialTheme.colorScheme.primaryContainer,
-                        modifier = Modifier.size(44.dp),
-                    ) {
-                        Box(contentAlignment = Alignment.Center) {
-                            Icon(
-                                imageVector = Icons.Rounded.Shield,
-                                contentDescription = null,
-                                tint = MaterialTheme.colorScheme.primary,
-                            )
-                        }
-                    }
-
-                    Column(modifier = Modifier.weight(1f)) {
-                        Text(
-                            text = stringResource(R.string.card_watch_title),
-                            style = MaterialTheme.typography.titleSmall,
-                        )
-                        Text(
-                            text = stringResource(R.string.card_watch_desc),
-                            style = MaterialTheme.typography.bodyMedium,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        )
-                    }
-
+                    Icon(
+                        imageVector = Icons.Rounded.Shield,
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.primary,
+                    )
+                    Text(
+                        text = stringResource(R.string.card_watch_title),
+                        style = MaterialTheme.typography.titleSmall,
+                        modifier = Modifier.weight(1f),
+                    )
                     Switch(
                         checked = settings.backgroundMonitorEnabled,
                         onCheckedChange = { enable ->
@@ -398,87 +351,28 @@ fun RadarScreen(
                                 onToggleBackgroundMonitor(enable)
                             }
                         },
+                        colors = SwitchDefaults.colors(
+                            checkedThumbColor = MaterialTheme.colorScheme.onPrimary,
+                            checkedTrackColor = MaterialTheme.colorScheme.primary,
+                        ),
                         modifier = Modifier.testTag("bg_monitor_switch"),
                     )
                 }
             }
 
-            // Local MikroTik Test Portal Card (for instant offline/emulator verification)
-            Card(
-                modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(20.dp),
-                colors = CardDefaults.cardColors(
-                    containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.55f),
+            // Subtle link to test portal without adding visual noise
+            TextButton(
+                onClick = onOpenTestPortal,
+                modifier = Modifier
+                    .align(Alignment.CenterHorizontally)
+                    .height(48.dp)
+                    .testTag("open_test_portal_button"),
+                colors = ButtonDefaults.textButtonColors(
+                    contentColor = MaterialTheme.colorScheme.primary,
                 ),
-                border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.6f)),
             ) {
-                Column(
-                    modifier = Modifier.padding(16.dp),
-                    verticalArrangement = Arrangement.spacedBy(10.dp),
-                ) {
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(8.dp),
-                    ) {
-                        Icon(
-                            imageVector = Icons.Rounded.Science,
-                            contentDescription = null,
-                            tint = MaterialTheme.colorScheme.primary,
-                        )
-                        Text(
-                            text = "معاينة واختبار المسح التلقائي",
-                            style = MaterialTheme.typography.titleSmall,
-                            fontWeight = FontWeight.Bold,
-                        )
-                    }
-                    Text(
-                        text = "إذا لم تكن متصلاً الآن بشبكة مايكروتك حقيقية، يمكنك فتح صفحة بوابة محلية لتجربة قراءة الكرت بالكاميرا أو الاستوديو وتعبئته تلقائياً.",
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    )
-                    OutlinedButton(
-                        onClick = onOpenTestPortal,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(48.dp)
-                            .testTag("open_test_portal_button"),
-                        shape = RoundedCornerShape(12.dp),
-                    ) {
-                        Icon(
-                            imageVector = Icons.Rounded.Wifi,
-                            contentDescription = null,
-                            modifier = Modifier.size(18.dp),
-                        )
-                        Spacer(modifier = Modifier.width(8.dp))
-                        Text(text = stringResource(R.string.action_test_portal))
-                    }
-                }
+                Text(text = stringResource(R.string.action_test_portal))
             }
-        }
-    }
-}
-
-@Composable
-private fun TelemetryRow(label: String, value: String) {
-    Row(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        Text(
-            text = label,
-            style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-        )
-        Spacer(modifier = Modifier.width(10.dp))
-        CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Ltr) {
-            Text(
-                text = value,
-                style = MaterialTheme.typography.labelSmall.copy(fontFamily = JetBrainsMonoFontFamily),
-                color = MaterialTheme.colorScheme.onSurface,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis,
-            )
         }
     }
 }

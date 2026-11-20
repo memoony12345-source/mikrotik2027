@@ -191,6 +191,10 @@ private fun SettingSwitchRow(
         Switch(
             checked = checked,
             onCheckedChange = onCheckedChange,
+            colors = androidx.compose.material3.SwitchDefaults.colors(
+                checkedThumbColor = MaterialTheme.colorScheme.onPrimary,
+                checkedTrackColor = MaterialTheme.colorScheme.primary,
+            ),
             modifier = Modifier.testTag(testTag),
         )
     }

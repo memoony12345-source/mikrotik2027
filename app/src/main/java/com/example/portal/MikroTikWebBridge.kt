@@ -208,33 +208,33 @@ object MikroTikWebBridge {
           <style>
             body {
               margin: 0; font-family: sans-serif;
-              background: linear-gradient(160deg, #0b141e 0%, #14283b 100%);
-              color: #f1f5f9; min-height: 100vh; display: flex;
+              background: #000000;
+              color: #faf6ec; min-height: 100vh; display: flex;
               align-items: center; justify-content: center; padding: 20px; box-sizing: border-box;
             }
             .card {
-              width: 100%; max-width: 380px; background: #12202e;
-              border: 1px solid #264059; border-radius: 20px; padding: 24px;
-              box-shadow: 0 20px 40px rgba(0,0,0,0.45);
+              width: 100%; max-width: 380px; background: #0d0d10;
+              border: 1px solid #332912; border-radius: 20px; padding: 24px;
+              box-shadow: 0 20px 40px rgba(0,0,0,0.65);
             }
             .badge {
-              display: inline-block; background: rgba(0,229,255,0.12);
-              color: #00e5ff; padding: 4px 12px; border-radius: 999px; font-size: 12px;
+              display: inline-block; background: rgba(245,196,81,0.14);
+              color: #f5c451; padding: 4px 12px; border-radius: 999px; font-size: 12px;
               margin-bottom: 12px;
             }
             h1 { margin: 0 0 6px; font-size: 20px; }
-            p { margin: 0 0 18px; color: #94a3b8; font-size: 13px; line-height: 1.6; }
-            label { display: block; font-size: 13px; margin-bottom: 6px; color: #cbd5e1; }
+            p { margin: 0 0 18px; color: #a39b8b; font-size: 13px; line-height: 1.6; }
+            label { display: block; font-size: 13px; margin-bottom: 6px; color: #e5dec9; }
             input[type="text"] {
               width: 100%; box-sizing: border-box; padding: 14px; border-radius: 12px;
-              border: 1px solid #335577; background: #0b141e; color: #00e5ff;
+              border: 1px solid #4d3d19; background: #000000; color: #f5c451;
               font-size: 18px; letter-spacing: 2px; text-align: center; direction: ltr;
               margin-bottom: 14px; outline: none;
             }
-            input[type="text"]:focus { border-color: #00e5ff; }
+            input[type="text"]:focus { border-color: #f5c451; }
             button {
               width: 100%; padding: 14px; border: 0; border-radius: 12px;
-              background: #00e5ff; color: #0b141e; font-size: 16px; font-weight: bold;
+              background: #f5c451; color: #000000; font-size: 16px; font-weight: bold;
               cursor: pointer;
             }
             .status-box {

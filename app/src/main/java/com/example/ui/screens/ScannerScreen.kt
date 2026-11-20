@@ -43,14 +43,13 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.ArrowBack
-import androidx.compose.material.icons.rounded.AutoMode
 import androidx.compose.material.icons.rounded.CameraAlt
 import androidx.compose.material.icons.rounded.FlashOff
 import androidx.compose.material.icons.rounded.FlashOn
 import androidx.compose.material.icons.rounded.PhotoLibrary
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.FilledTonalButton
-import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -490,41 +489,28 @@ fun ScannerScreen(
                 }
             }
 
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(10.dp),
-                verticalAlignment = Alignment.CenterVertically,
+            Button(
+                onClick = onPickFromGallery,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(50.dp)
+                    .testTag("scanner_gallery_button"),
+                shape = RoundedCornerShape(14.dp),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = MaterialTheme.colorScheme.primary,
+                    contentColor = MaterialTheme.colorScheme.onPrimary,
+                ),
             ) {
-                FilterChip(
-                    selected = autoLockEnabled,
-                    onClick = { autoLockEnabled = !autoLockEnabled },
-                    leadingIcon = {
-                        Icon(
-                            imageVector = Icons.Rounded.AutoMode,
-                            contentDescription = null,
-                            modifier = Modifier.size(18.dp),
-                        )
-                    },
-                    label = { Text("التقاط تلقائي") },
-                    modifier = Modifier.height(48.dp),
+                Icon(
+                    imageVector = Icons.Rounded.PhotoLibrary,
+                    contentDescription = null,
+                    modifier = Modifier.size(18.dp),
                 )
-
-                Button(
-                    onClick = onPickFromGallery,
-                    modifier = Modifier
-                        .weight(1f)
-                        .height(48.dp)
-                        .testTag("scanner_gallery_button"),
-                    shape = RoundedCornerShape(14.dp),
-                ) {
-                    Icon(
-                        imageVector = Icons.Rounded.PhotoLibrary,
-                        contentDescription = null,
-                        modifier = Modifier.size(18.dp),
-                    )
-                    Spacer(modifier = Modifier.width(8.dp))
-                    Text("إحضار من الاستوديو")
-                }
+                Spacer(modifier = Modifier.width(8.dp))
+                Text(
+                    text = "إحضار صورة الكرت من الاستوديو",
+                    fontWeight = FontWeight.Bold,
+                )
             }
         }
     }

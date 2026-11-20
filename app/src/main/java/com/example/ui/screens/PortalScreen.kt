@@ -7,11 +7,9 @@ import android.webkit.WebResourceRequest
 import android.webkit.WebSettings
 import android.webkit.WebView
 import android.webkit.WebViewClient
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.slideInVertically
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
@@ -34,16 +32,14 @@ import androidx.compose.material.icons.rounded.AutoFixHigh
 import androidx.compose.material.icons.rounded.CameraAlt
 import androidx.compose.material.icons.rounded.CheckCircle
 import androidx.compose.material.icons.rounded.Close
-import androidx.compose.material.icons.rounded.ContentPaste
 import androidx.compose.material.icons.rounded.Edit
 import androidx.compose.material.icons.rounded.PhotoLibrary
 import androidx.compose.material.icons.rounded.Refresh
 import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.AssistChip
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LinearProgressIndicator
@@ -110,7 +106,6 @@ fun PortalScreen(
     var showManualDialog by remember { mutableStateOf(false) }
     var manualInput by remember { mutableStateOf("") }
 
-    // Load URL when requested or when WebView is first attached
     LaunchedEffect(webViewRef, portalUrlToLoad, portalLoadNonce) {
         val webView = webViewRef ?: return@LaunchedEffect
         val target = portalUrlToLoad ?: MikroTikWebBridge.TEST_PORTAL_URL
@@ -127,7 +122,6 @@ fun PortalScreen(
         }
     }
 
-    // Inject scanned/selected voucher code as soon as page & voucher field are ready
     LaunchedEffect(pendingCode, domState.hasVoucherField, domState.isLoading) {
         val injection = pendingCode ?: return@LaunchedEffect
         val webView = webViewRef ?: return@LaunchedEffect
@@ -144,125 +138,83 @@ fun PortalScreen(
     }
 
     Column(modifier = modifier.fillMaxSize()) {
-        // Address & Quick Gateway Bar
+        // Minimal Address Bar
         Surface(
             color = MaterialTheme.colorScheme.surface,
-            tonalElevation = 2.dp,
             modifier = Modifier.fillMaxWidth(),
         ) {
-            Column(modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp)) {
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(6.dp),
-                ) {
-                    CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Ltr) {
-                        OutlinedTextField(
-                            value = addressText,
-                            onValueChange = { addressText = it },
-                            singleLine = true,
-                            placeholder = {
-                                Text(
-                                    text = stringResource(R.string.portal_url_hint),
-                                    style = MaterialTheme.typography.bodyMedium,
-                                )
-                            },
-                            textStyle = MaterialTheme.typography.labelSmall.copy(
-                                fontFamily = JetBrainsMonoFontFamily,
-                            ),
-                            keyboardOptions = KeyboardOptions(
-                                keyboardType = KeyboardType.Uri,
-                                imeAction = ImeAction.Go,
-                            ),
-                            keyboardActions = KeyboardActions(
-                                onGo = { onLoadUrl(addressText) },
-                            ),
-                            shape = RoundedCornerShape(12.dp),
-                            modifier = Modifier
-                                .weight(1f)
-                                .testTag("portal_url_input"),
-                        )
-                    }
-
-                    FilledTonalButton(
-                        onClick = { onLoadUrl(addressText) },
+            Row(
+                modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+            ) {
+                CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Ltr) {
+                    OutlinedTextField(
+                        value = addressText,
+                        onValueChange = { addressText = it },
+                        singleLine = true,
+                        placeholder = {
+                            Text(
+                                text = stringResource(R.string.portal_url_hint),
+                                style = MaterialTheme.typography.bodyMedium,
+                            )
+                        },
+                        textStyle = MaterialTheme.typography.labelSmall.copy(
+                            fontFamily = JetBrainsMonoFontFamily,
+                        ),
+                        keyboardOptions = KeyboardOptions(
+                            keyboardType = KeyboardType.Uri,
+                            imeAction = ImeAction.Go,
+                        ),
+                        keyboardActions = KeyboardActions(
+                            onGo = { onLoadUrl(addressText) },
+                        ),
                         shape = RoundedCornerShape(12.dp),
                         modifier = Modifier
-                            .height(48.dp)
-                            .testTag("portal_go_button"),
-                    ) {
-                        Text(text = stringResource(R.string.portal_go))
-                    }
-
-                    IconButton(
-                        onClick = { webViewRef?.reload() },
-                        modifier = Modifier
-                            .size(48.dp)
-                            .testTag("portal_reload_button"),
-                    ) {
-                        Icon(
-                            imageVector = Icons.Rounded.Refresh,
-                            contentDescription = "تحديث الصفحة",
-                        )
-                    }
+                            .weight(1f)
+                            .testTag("portal_url_input"),
+                    )
                 }
 
-                // Quick MikroTik Gateway Shortcuts
-                Row(
+                Button(
+                    onClick = { onLoadUrl(addressText) },
+                    shape = RoundedCornerShape(12.dp),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = MaterialTheme.colorScheme.primary,
+                        contentColor = MaterialTheme.colorScheme.onPrimary,
+                    ),
                     modifier = Modifier
-                        .fillMaxWidth()
-                        .horizontalScroll(rememberScrollState())
-                        .padding(top = 6.dp),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                        .height(48.dp)
+                        .testTag("portal_go_button"),
                 ) {
-                    networkState.portalUrl?.let { detected ->
-                        AssistChip(
-                            onClick = {
-                                addressText = detected
-                                onLoadUrl(detected)
-                            },
-                            label = { Text("البوابة المكتشفة") },
-                        )
-                    }
-                    networkState.gatewayIp?.let { gw ->
-                        val gwUrl = "http://$gw/login"
-                        AssistChip(
-                            onClick = {
-                                addressText = gwUrl
-                                onLoadUrl(gwUrl)
-                            },
-                            label = { Text(gw) },
-                        )
-                    }
-                    AssistChip(
-                        onClick = {
-                            addressText = MikroTikWebBridge.TEST_PORTAL_URL
-                            onOpenTestPortal()
-                        },
-                        label = { Text("بوابة تجريبية") },
+                    Text(
+                        text = stringResource(R.string.portal_go),
+                        fontWeight = FontWeight.Bold,
                     )
-                    AssistChip(
-                        onClick = {
-                            addressText = "http://10.5.50.1/login"
-                            onLoadUrl("http://10.5.50.1/login")
-                        },
-                        label = { Text("10.5.50.1") },
-                    )
-                    AssistChip(
-                        onClick = {
-                            addressText = "http://192.168.88.1/login"
-                            onLoadUrl("http://192.168.88.1/login")
-                        },
-                        label = { Text("192.168.88.1") },
+                }
+
+                IconButton(
+                    onClick = { webViewRef?.reload() },
+                    modifier = Modifier
+                        .size(48.dp)
+                        .testTag("portal_reload_button"),
+                ) {
+                    Icon(
+                        imageVector = Icons.Rounded.Refresh,
+                        contentDescription = "تحديث الصفحة",
+                        tint = MaterialTheme.colorScheme.primary,
                     )
                 }
             }
         }
 
         if (domState.isLoading || isProcessingGallery) {
-            LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
+            LinearProgressIndicator(
+                modifier = Modifier.fillMaxWidth(),
+                color = MaterialTheme.colorScheme.primary,
+            )
         }
 
-        // WebView + Floating Smart Voucher Prompt
         Box(modifier = Modifier.weight(1f).fillMaxWidth()) {
             AndroidView(
                 modifier = Modifier.fillMaxSize(),
@@ -331,7 +283,7 @@ fun PortalScreen(
                 },
             )
 
-            // Gallery candidate selector sheet if multiple codes found in picked photo
+            // Gallery candidate selector if multiple codes detected in photo
             if (galleryCandidates.isNotEmpty()) {
                 Card(
                     modifier = Modifier
@@ -373,10 +325,9 @@ fun PortalScreen(
                                 Surface(
                                     shape = RoundedCornerShape(12.dp),
                                     color = MaterialTheme.colorScheme.primaryContainer,
-                                    modifier = Modifier
-                                        .clickable {
-                                            onSubmitVoucherCode(candidate.code, "GALLERY")
-                                        },
+                                    modifier = Modifier.clickable {
+                                        onSubmitVoucherCode(candidate.code, "GALLERY")
+                                    },
                                 ) {
                                     CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Ltr) {
                                         Text(
@@ -395,7 +346,7 @@ fun PortalScreen(
                 }
             }
 
-            // Floating Smart Prompt Banner when Voucher Field is Detected on the Portal
+            // Slim Floating Gold Action Bar when Voucher Field is Detected
             androidx.compose.animation.AnimatedVisibility(
                 visible = domState.hasVoucherField || domState.isStatusOrConnectedPage,
                 enter = fadeIn() + slideInVertically { it / 2 },
@@ -433,10 +384,10 @@ fun PortalScreen(
                     Card(
                         shape = RoundedCornerShape(20.dp),
                         colors = CardDefaults.cardColors(
-                            containerColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.97f),
+                            containerColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.98f),
                         ),
                         border = BorderStroke(1.5.dp, MaterialTheme.colorScheme.primary),
-                        elevation = CardDefaults.cardElevation(defaultElevation = 8.dp),
+                        elevation = CardDefaults.cardElevation(defaultElevation = 10.dp),
                         modifier = Modifier.fillMaxWidth(),
                     ) {
                         Column(
@@ -452,22 +403,14 @@ fun PortalScreen(
                                     contentDescription = null,
                                     tint = MaterialTheme.colorScheme.primary,
                                 )
-                                Column(modifier = Modifier.weight(1f)) {
-                                    Text(
-                                        text = stringResource(R.string.portal_field_detected),
-                                        style = MaterialTheme.typography.titleSmall,
-                                        fontWeight = FontWeight.Bold,
-                                        maxLines = 1,
-                                        overflow = TextOverflow.Ellipsis,
-                                    )
-                                    if (domState.detectedFieldHint.isNotBlank()) {
-                                        Text(
-                                            text = "الحقل: ${domState.detectedFieldHint}",
-                                            style = MaterialTheme.typography.bodyMedium,
-                                            color = MaterialTheme.colorScheme.onSurfaceVariant,
-                                        )
-                                    }
-                                }
+                                Text(
+                                    text = stringResource(R.string.portal_field_detected),
+                                    style = MaterialTheme.typography.titleSmall,
+                                    fontWeight = FontWeight.Bold,
+                                    maxLines = 1,
+                                    overflow = TextOverflow.Ellipsis,
+                                    modifier = Modifier.weight(1f),
+                                )
                                 IconButton(
                                     onClick = {
                                         manualInput = lastRecordedCode.orEmpty()
@@ -480,13 +423,14 @@ fun PortalScreen(
                                     Icon(
                                         imageVector = Icons.Rounded.Edit,
                                         contentDescription = stringResource(R.string.portal_manual_code),
+                                        tint = MaterialTheme.colorScheme.primary,
                                     )
                                 }
                             }
 
                             Row(
                                 modifier = Modifier.fillMaxWidth(),
-                                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                                horizontalArrangement = Arrangement.spacedBy(10.dp),
                             ) {
                                 Button(
                                     onClick = onOpenScanner,
@@ -495,6 +439,10 @@ fun PortalScreen(
                                         .height(48.dp)
                                         .testTag("portal_scan_camera_button"),
                                     shape = RoundedCornerShape(12.dp),
+                                    colors = ButtonDefaults.buttonColors(
+                                        containerColor = MaterialTheme.colorScheme.primary,
+                                        contentColor = MaterialTheme.colorScheme.onPrimary,
+                                    ),
                                 ) {
                                     Icon(
                                         imageVector = Icons.Rounded.CameraAlt,
@@ -504,8 +452,8 @@ fun PortalScreen(
                                     Spacer(modifier = Modifier.width(6.dp))
                                     Text(
                                         text = "مسح بالكاميرا",
+                                        fontWeight = FontWeight.Bold,
                                         maxLines = 1,
-                                        overflow = TextOverflow.Ellipsis,
                                     )
                                 }
 
@@ -516,6 +464,10 @@ fun PortalScreen(
                                         .height(48.dp)
                                         .testTag("portal_pick_gallery_button"),
                                     shape = RoundedCornerShape(12.dp),
+                                    border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary),
+                                    colors = ButtonDefaults.outlinedButtonColors(
+                                        contentColor = MaterialTheme.colorScheme.primary,
+                                    ),
                                 ) {
                                     Icon(
                                         imageVector = Icons.Rounded.PhotoLibrary,
@@ -525,26 +477,9 @@ fun PortalScreen(
                                     Spacer(modifier = Modifier.width(6.dp))
                                     Text(
                                         text = "من الاستوديو",
+                                        fontWeight = FontWeight.SemiBold,
                                         maxLines = 1,
-                                        overflow = TextOverflow.Ellipsis,
                                     )
-                                }
-                            }
-
-                            if (!lastRecordedCode.isNullOrBlank()) {
-                                TextButton(
-                                    onClick = { onSubmitVoucherCode(lastRecordedCode, "MANUAL") },
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .height(40.dp),
-                                ) {
-                                    Icon(
-                                        imageVector = Icons.Rounded.ContentPaste,
-                                        contentDescription = null,
-                                        modifier = Modifier.size(16.dp),
-                                    )
-                                    Spacer(modifier = Modifier.width(6.dp))
-                                    Text("تعبئة آخر كود: $lastRecordedCode")
                                 }
                             }
                         }
