@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">mikrotik 2027</string>
+
+    <!-- Navigation -->
+    <string name="nav_radar">الرادار</string>
+    <string name="nav_portal">البوابة</string>
+    <string name="nav_history">السجل</string>
+    <string name="nav_settings">الإعدادات</string>
+
+    <!-- Radar / Home -->
+    <string name="radar_subtitle">بوابة المايكروتك الذكية</string>
+    <string name="status_captive_detected">تم رصد بوابة دخول مايكروتك</string>
+    <string name="status_wifi_connected">متصل بالوايفاي والإنترنت يعمل</string>
+    <string name="status_wifi_checking">جاري فحص الشبكة وبوابة الدخول...</string>
+    <string name="status_no_wifi">غير متصل بشبكة وايفاي</string>
+    <string name="label_gateway">البوابة / العنوان</string>
+    <string name="label_portal_url">رابط صفحة الدخول</string>
+    <string name="label_network_interface">واجهة الاتصال</string>
+    <string name="action_open_portal">فتح صفحة البوابة الآن</string>
+    <string name="action_quick_scan">مسح كرت بالكاميرا</string>
+    <string name="action_rescan_network">إعادة فحص الشبكة</string>
+    <string name="action_pick_from_gallery">اختيار صورة كرت من الاستوديو</string>
+    <string name="action_test_portal">تجربة على بوابة مايكروتك محلية</string>
+    <string name="card_watch_title">المراقبة التلقائية للبوابة</string>
+    <string name="card_watch_desc">تنبيه فوري وفتح البوابة تلقائياً عند الاتصال بأي شبكة مايكروتك</string>
+
+    <!-- Portal WebView -->
+    <string name="portal_field_detected">تم التعرف على خانة إدخال الكرت! جاهز للمسح</string>
+    <string name="portal_scanning_dom">جاري فحص حقول صفحة التسجيل...</string>
+    <string name="portal_logged_in">تم تسجيل الدخول! تم التحقق من الاتصال بالإنترنت</string>
+    <string name="portal_no_field_yet">افتح صفحة التسجيل أو اختر بوابة من القائمة</string>
+    <string name="portal_url_hint">عنوان البوابة مثل http://10.5.50.1/login</string>
+    <string name="portal_go">انتقال</string>
+    <string name="portal_paste_last">لصق آخر كود</string>
+    <string name="portal_manual_code">إدخال أو تعديل الكود يدوياً</string>
+    <string name="portal_submit_now">تعبئة ودخول</string>
+
+    <!-- Scanner -->
+    <string name="scanner_title">مسح كرت المايكروتك</string>
+    <string name="scanner_hint">وجّه الإطار نحو الرقم المكشوط على الكرت (6 إلى 12 خانة)</string>
+    <string name="scanner_camera_permission_title">إذن الكاميرا مطلوب للمسح</string>
+    <string name="scanner_camera_permission_desc">نستخدم الكاميرا لقراءة أرقام وحروف كرت الشبكة محلياً بدون إنترنت.</string>
+    <string name="scanner_grant_permission">منح إذن الكاميرا</string>
+    <string name="scanner_candidates_title">الأكواد المكتشفة (اضغط للاختيار):</string>
+    <string name="scanner_no_code_in_image">لم يتم العثور على كود من 6 إلى 12 خانة في الصورة. يمكنك المحاولة بصورة أوضح أو إدخال الكود يدوياً.</string>
+    <string name="scanner_flash_toggle">تبديل الفلاش</string>
+    <string name="scanner_back">رجوع</string>
+
+    <!-- History & Profiles -->
+    <string name="history_title">سجل الكروت والشبكات</string>
+    <string name="history_empty">لا توجد عمليات مسح سابقة بعد</string>
+    <string name="history_empty_tip">عند مسح أي كرت مايكروتك بالكاميرا أو الاستوديو سيظهر هنا لسهولة النسخ أو إعادة الاستخدام.</string>
+    <string name="history_clear_all">مسح السجل</string>
+    <string name="history_copy">نسخ الكود</string>
+    <string name="history_use_in_portal">استخدام في البوابة</string>
+
+    <!-- Settings -->
+    <string name="settings_title">إعدادات المساعد</string>
+    <string name="setting_bg_monitor">مراقبة الوايفاي بالخلفية</string>
+    <string name="setting_bg_monitor_desc">إظهار إشعار فوري عند الاتصال بشبكة تطلب تسجيل دخول</string>
+    <string name="setting_auto_open">فتح البوابة تلقائياً</string>
+    <string name="setting_auto_open_desc">الانتقال الفوري لصفحة البوابة داخل التطبيق فور رصدها</string>
+    <string name="setting_auto_submit">ضغط زر الدخول تلقائياً</string>
+    <string name="setting_auto_submit_desc">بعد قراءة الكرت ووضعه في المربع يتم تسجيل الدخول مباشرة</string>
+    <string name="setting_mirror_password">تعبئة حقل كلمة المرور أيضاً</string>
+    <string name="setting_mirror_password_desc">لبعض شبكات المايكروتك التي تطلب نفس رمز الكرت في خانتين</string>
+    <string name="setting_code_mode">نمط كود الكرت</string>
+    <string name="mode_auto">تلقائي (أرقام أو حروف وأرقام)</string>
+    <string name="mode_digits_only">أرقام فقط (0-9)</string>
+    <string name="mode_alphanumeric">حروف إنجليزية وأرقام</string>
+
+    <!-- Notifications -->
+    <string name="notif_channel_monitor_name">مراقب بوابات الوايفاي</string>
+    <string name="notif_channel_monitor_desc">إشعار مستمر لفحص بوابات المايكروتك فور الاتصال بالوايفاي</string>
+    <string name="notif_channel_portal_name">تنبيهات بوابات الدخول</string>
+    <string name="notif_channel_portal_desc">إشعار فوري عند اكتشاف صفحة تسجيل دخول أو خانة إدخال الكرت</string>
+</resources>

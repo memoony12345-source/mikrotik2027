@@ -1,0 +1,6 @@
+{
+  "name": "mikrotik 2027",
+  "description": "مساعد ذكي وسريع للتعرف على بوابات شبكات المايكروتك ومسح كروت الدخول بالكاميرا أو الاستوديو وتعبئتها تلقائياً",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
